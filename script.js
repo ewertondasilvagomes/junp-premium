@@ -22,8 +22,13 @@ function onYouTubeIframeAPIReady() {
 
 // Extrair ID do vídeo a partir do URL
 function extractVideoId(url) {
-  const urlObj = new URL(url);
-  return urlObj.searchParams.get('v') || urlObj.pathname.split('/').pop();
+  try {
+    const urlObj = new URL(url);
+    return urlObj.searchParams.get('v') || urlObj.pathname.split('/').pop();
+  } catch (error) {
+    console.error('URL inválida:', error);
+    return null;
+  }
 }
 
 // Carregar o vídeo no player
@@ -42,14 +47,57 @@ function loadVideo(videoId) {
   });
 }
 
-// Buscar dados de repetição e capítulos
+// Buscar dados de repetição e capítulos usando a API do YouTube
 async function fetchVideoData(videoId) {
-  // Substitua com a sua chamada da API do YouTube
-  const response = await fetch(`/youtube-data?videoId=${videoId}`);
-  const data = await response.json();
+  const url = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,snippet&id=${videoId}&key=${API_KEY}`;
 
-  repeatedSections = data.repeatedSections || [];
-  chapters = data.chapters || [];
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Erro ao buscar dados: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Dados do vídeo:', data);
+
+    if (data.items.length > 0) {
+      const videoInfo = data.items[0];
+      const description = videoInfo.snippet.description;
+
+      // Processar descrição para extrair capítulos
+      chapters = parseChaptersFromDescription(description);
+
+      // Simular seções mais repetidas (substitua com lógica real, se disponível)
+      repeatedSections = simulateRepeatedSections();
+    } else {
+      console.error('Nenhum dado encontrado para o vídeo.');
+    }
+  } catch (error) {
+    console.error('Erro ao buscar dados do vídeo:', error);
+  }
+}
+
+// Simular seções mais repetidas (substituir pela lógica real)
+function simulateRepeatedSections() {
+  return [
+    { start: 30, end: 60 }, // Exemplo: seção mais repetida
+  ];
+}
+
+// Detectar capítulos a partir da descrição do vídeo
+function parseChaptersFromDescription(description) {
+  const regex = /(\d{1,2}:\d{2})\s+-\s+(.*)/g;
+  const matches = [];
+  let match;
+
+  while ((match = regex.exec(description)) !== null) {
+    const timeParts = match[1].split(':');
+    const seconds = parseInt(timeParts[0]) * 60 + parseInt(timeParts[1]);
+
+    matches.push({ start: seconds, title: match[2] });
+  }
+
+  return matches;
 }
 
 // Detectar teclas pressionadas
