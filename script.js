@@ -1,4 +1,5 @@
 const API_KEY = 'AIzaSyBPOmXUtqcXATonhjw-pkWArcM4reU2gg';
+
 let player;
 let repeatedSections = [];
 let chapters = [];
@@ -99,8 +100,9 @@ function parseChaptersFromDescription(description) {
 
   return matches;
 }
+// dectando o iframe 
 
-// Detectar teclas pressionadas
+const iframe = document.querySelector("#player").innerHTML;
 window.addEventListener('keydown', (event) => {
   const now = Date.now();
   if (event.key === 'ArrowRight') {
@@ -117,8 +119,11 @@ window.addEventListener('keydown', (event) => {
   }
 });
 
+
 // Pular para a seção ou capítulo mais relevante
 document.getElementById('skipButton').addEventListener('click', () => {
+  if (!player || !player.getCurrentTime) return;
+
   const currentTime = player.getCurrentTime();
   const nextPoint = findNextPoint(currentTime);
 
@@ -160,3 +165,20 @@ function onPlayerStateChange(event) {
     document.getElementById('skipButton').style.display = 'none';
   }
 }
+
+
+// Carregar a API do YouTube
+const tag = document.createElement('script');
+tag.src = 'https://www.youtube.com/iframe_api';
+const firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+document.addEventListener('keydown', (event) => {
+  // Verifica se a tecla pressionada é a seta para a direita
+  if (event.key === 'ArrowRight') {
+    // Aqui você coloca o código que deseja executar
+    console.log('Você pressionou a seta para a direita!');
+    // Exemplo: mover um elemento para a direita
+    document.getElementById('divframe').style.left = '+=10px';
+  }
+});
