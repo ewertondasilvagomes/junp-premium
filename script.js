@@ -1,5 +1,4 @@
 const API_KEY = 'AIzaSyBPOmXUtqcXATonhjw-pkWArcM4reU2ggk';
-
 let player;
 let repeatedSections = [];
 let chapters = [];
