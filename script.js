@@ -179,6 +179,6 @@ document.addEventListener('keydown', (event) => {
     // Aqui você coloca o código que deseja executar
     console.log('Você pressionou a seta para a direita!');
     // Exemplo: mover um elemento para a direita
-    document.getElementById('divframe').style.left = '+=10px';
+    document.getElementById('corpo').style.left = '+=10px';
   }
 });
